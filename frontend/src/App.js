@@ -22,7 +22,7 @@ function App() {
   const [activeListView, setActiveListView] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:8000/boards")
+    fetch("https://bainbites-backend-e70ac0dfdb19.herokuapp.com/boards")
       .then(res => res.json())
       .then(data => {
         const formatted = data.map(b => ({
@@ -44,7 +44,7 @@ function App() {
     e.preventDefault();
     try {
       const res = await fetch(
-        `http://localhost:8000/recommendations?meeting_type=${form.meetingType}&cuisine=${form.cuisine}&location=${form.location}&sort_by=${form.sortBy}&radius=${form.distance}&price=${form.price}`
+        `https://bainbites-backend-e70ac0dfdb19.herokuapp.com/recommendations?meeting_type=${form.meetingType}&cuisine=${form.cuisine}&location=${form.location}&sort_by=${form.sortBy}&radius=${form.distance}&price=${form.price}`
       );
       const data = await res.json();
       setRecommendations(data.businesses || []);
@@ -71,7 +71,7 @@ function App() {
     const list = bainEatsLists.find((l) => l.id === listId);
     if (!list) return;
 
-    await fetch(`http://localhost:8000/boards/${listId}/pin`, {
+    await fetch(`https://bainbites-backend-e70ac0dfdb19.herokuapp.com/boards/${listId}/pin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -97,7 +97,7 @@ function App() {
   };
 
   const handleVote = async (listId, restaurantId) => {
-    await fetch(`http://localhost:8000/boards/${listId}/vote`, {
+    await fetch(`https://bainbites-backend-e70ac0dfdb19.herokuapp.com/boards/${listId}/vote`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ business_id: restaurantId, vote: "yes" }),

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8000"; // Change this on deploy
+const BASE_URL = "https://bainbites-backend-e70ac0dfdb19.herokuapp.com"; 
 
 export const pinRestaurant = async (boardId, restaurant) =>
   axios.post(`${BASE_URL}/boards/${boardId}/pin`, restaurant);
