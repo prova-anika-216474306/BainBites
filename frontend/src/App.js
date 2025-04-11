@@ -3,6 +3,7 @@ import "./App.css";
 import CreateListModal from "./CreateListModal";
 import ViewListsModal from "./ViewListsModal";
 import BainListView from "./BainListView";
+import ENDPOINTS from "./config";
 
 function App() {
   const [form, setForm] = useState({
@@ -24,7 +25,7 @@ function App() {
   const [summaryModal, setSummaryModal] = useState(null);
 
   useEffect(() => {
-    fetch("https://bainbites-backend-cf7633e008c8.herokuapp.com/boards")
+    fetch(ENDPOINTS.GET_BOARDS)
       .then(res => res.json())
       .then(data => {
         const formatted = data.map(b => ({
@@ -46,7 +47,7 @@ function App() {
     e.preventDefault();
     try {
       const res = await fetch(
-        `https://bainbites-backend-cf7633e008c8.herokuapp.com/recommendations?meeting_type=${form.meetingType}&cuisine=${form.cuisine}&location=${form.location}&sort_by=${form.sortBy}&radius=${form.distance}&price=${form.price}`
+        `${ENDPOINTS.GET_RECOMMENDATIONS}?meeting_type=${form.meetingType}&cuisine=${form.cuisine}&location=${form.location}&sort_by=${form.sortBy}&radius=${form.distance}&price=${form.price}`
       );
       const data = await res.json();
       setRecommendations(data.businesses || []);
@@ -73,7 +74,7 @@ function App() {
     const list = bainEatsLists.find((l) => l.id === listId);
     if (!list) return;
 
-    await fetch(`https://bainbites-backend-cf7633e008c8.herokuapp.com/boards/${listId}/pin`, {
+    await fetch(ENDPOINTS.PIN_TO_BOARD(listId), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -99,7 +100,7 @@ function App() {
   };
 
   const handleVote = async (listId, restaurantId) => {
-    await fetch(`https://bainbites-backend-cf7633e008c8.herokuapp.com/boards/${listId}/vote`, {
+    await fetch(ENDPOINTS.VOTE_ON_RESTAURANT(listId), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ business_id: restaurantId, vote: "yes" }),
@@ -132,7 +133,7 @@ function App() {
     };
   
     try {
-      const res = await fetch(`https://bainbites-backend-cf7633e008c8.herokuapp.com/summarize`, {
+      const res = await fetch(ENDPOINTS.SUMMARIZE, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
