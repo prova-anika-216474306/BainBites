@@ -114,3 +114,8 @@ def vote_restaurant(board_id: str, vote_input: VoteInput):
         raise HTTPException(status_code=400, detail="Invalid vote")
     board["votes"][vote_input.business_id][vote_input.vote] += 1
     return {"message": f"Vote '{vote_input.vote}' recorded."}
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)

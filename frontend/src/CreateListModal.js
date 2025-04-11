@@ -11,7 +11,7 @@ const CreateListModal = ({ onClose, onCreate }) => {
       return alert("All fields required!");
     }
 
-    const res = await fetch("https://bainbites-backend-e70ac0dfdb19.herokuapp.com/boards/create", {
+    const res = await fetch("https://bainbites-backend-cf7633e008c8.herokuapp.com/boards/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ event_name: eventName, date, created_by: creator }),

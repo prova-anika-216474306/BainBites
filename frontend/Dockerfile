@@ -1,15 +1,17 @@
-FROM node:20
+# Build stage
+FROM node:18-alpine AS build
 
 WORKDIR /app
-
-COPY package.json ./
-COPY package-lock.json ./
+COPY package*.json ./
 RUN npm install
 
 COPY . .
-
 RUN npm run build
 
-# Serve using static server
-RUN npm install -g serve
-CMD ["serve", "-s", "build", "-l", "3000"]
+# Serve stage
+FROM nginx:alpine
+COPY --from=build /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/templates/default.conf.template
+
+EXPOSE 8080
+CMD ["nginx", "-g", "daemon off;"]

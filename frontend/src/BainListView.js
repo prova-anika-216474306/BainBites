@@ -5,7 +5,7 @@ const BainListView = ({ list, onVote, onBack }) => {
   const [pins, setPins] = useState([]);
 
   useEffect(() => {
-    fetch(`https://bainbites-backend-e70ac0dfdb19.herokuapp.com/boards/${list.id}`)
+    fetch(`https://bainbites-backend-cf7633e008c8.herokuapp.com/boards/${list.id}`)
       .then((res) => res.json())
       .then((data) => {
         setPins(data.pins);
@@ -14,7 +14,7 @@ const BainListView = ({ list, onVote, onBack }) => {
   }, [list.id]);
 
   const submitVote = async (businessId, voteType) => {
-    await fetch(`https://bainbites-backend-e70ac0dfdb19.herokuapp.com/boards/${list.id}/vote`, {
+    await fetch(`https://bainbites-backend-cf7633e008c8.herokuapp.com/boards/${list.id}/vote`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ business_id: businessId, vote: voteType }),
