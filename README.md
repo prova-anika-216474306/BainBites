@@ -16,25 +16,73 @@ Built with **React** (frontend) and **FastAPI** (backend), powered by **Yelp** a
 
 ## 🧑‍💻 Run Locally
 
-### 1️⃣ Clone the Repo and Run Backend + Frontend
+### 1. Clone the Repository
 
-````bash
-# Clone the repository
+Run the following commands:
+
+```bash
 git clone https://github.com/prova-anika-216474306/BainBites.git
 cd BainBites
+```
 
-# 🚀 Backend (FastAPI)
+---
+
+### 2. Start the Backend (FastAPI)
+
+Run the following commands:
+
+```bash
 cd backend
 pip install -r requirements.txt
 uvicorn main:app --reload
-# Runs at http://127.0.0.1:8000
+```
 
-# 🚀 Frontend (React.js)
+App will run at:  
+[http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+---
+
+### 3. Start the Frontend (React.js)
+
+Run the following commands:
+
+```bash
 cd ../frontend
 npm install
+```
 
-# In src/config.js, set:
-# const BASE_URL = "http://127.0.0.1:8000"; // Change to Heroku URL in production
+Update the config file at `src/config.js`:
 
+```js
+const BASE_URL = "http://127.0.0.1:8000"; // Change to Heroku URL in production
+```
+
+Then run:
+
+```bash
 npm start
-# Runs at http://localhost:3000
+```
+
+App will run at:  
+[http://localhost:3000](http://localhost:3000)
+
+---
+
+## 📂 Project Structure
+
+```
+BainBites/
+├── backend/        # FastAPI backend
+│   └── main.py     # API routes and logic
+├── frontend/       # React frontend
+│   └── src/
+│       └── config.js
+├── README.md       # This file
+```
+
+---
+
+## 🌐 Live Deployment
+
+- **Frontend:** Hosted on Heroku  
+- **Backend:** Hosted on Heroku or locally at `http://127.0.0.1:8000`
