@@ -18,13 +18,13 @@ A full-stack app that helps Bain Partners in Toronto quickly find and vote on re
 git clone https://github.com/prova-anika-216474306/BainBites.git
 cd BainBites
 
-### 🚀 Backend (FastAPI)
+## 🚀 Backend (FastAPI)
 cd backend
 pip install -r requirements.txt
 uvicorn main:app --reload
 **Uvicorn runs at http://127.0.0.1:8000**
 
-### 🚀 Frontend (React.js)
+## 🚀 Frontend (React.js)
 cd ../frontend
 npm install
 In src/config.js, **const BASE_URL = "http://127.0.0.1:8000"**; // Change to Heroku URL in production
