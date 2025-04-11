@@ -5,6 +5,10 @@ from pydantic import BaseModel
 import requests, os
 from uuid import uuid4
 from dotenv import load_dotenv
+from pydantic import BaseModel
+import openai 
+import googlemaps
+
 
 load_dotenv()
 
@@ -20,6 +24,9 @@ app.add_middleware(
 
 YELP_API_KEY = os.getenv("YELP_API_KEY")
 YELP_API_URL = "https://api.yelp.com/v3/businesses/search"
+YELP_REVIEWS_URL = "https://api.yelp.com/v3/businesses/{alias}/reviews"
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+gmaps = googlemaps.Client(key=GOOGLE_API_KEY)
 
 boards = {}
 
@@ -38,6 +45,15 @@ class CreateBoardInput(BaseModel):
     date: str
     created_by: str
 
+class ReviewSummaryRequest(BaseModel):
+    name: str
+    categories: List[str]
+    price: str
+    rating: float
+    review_count: int
+    location: str
+    menu_url: str
+
 @app.get("/recommendations")
 def get_recommendations(
     meeting_type: str = "team_lunch",
@@ -49,6 +65,7 @@ def get_recommendations(
     limit: int = Query(6)
 ):
     headers = {"Authorization": f"Bearer {YELP_API_KEY}"}
+    
     params = {
         "term": cuisine,
         "location": location,
@@ -58,12 +75,30 @@ def get_recommendations(
     }
     if price:
         params["price"] = price
-
+        
     response = requests.get(YELP_API_URL, headers=headers, params=params)
+
     if response.status_code != 200:
         return {"error": response.json()}
 
-    return response.json()
+    businesses = response.json().get("businesses", [])
+
+    for b in businesses:
+        alias = b.get("alias")
+        if not alias:
+            b["reviews"] = []
+            continue
+
+        reviews_res = requests.get(
+            YELP_REVIEWS_URL.format(alias=alias),
+            headers=headers
+        )
+        if reviews_res.status_code == 200:
+            b["reviews"] = [r["text"] for r in reviews_res.json().get("reviews", [])]
+        else:
+            b["reviews"] = []
+
+    return {"businesses": businesses}
 
 @app.post("/boards/create")
 def create_board(board: CreateBoardInput):
@@ -114,6 +149,46 @@ def vote_restaurant(board_id: str, vote_input: VoteInput):
         raise HTTPException(status_code=400, detail="Invalid vote")
     board["votes"][vote_input.business_id][vote_input.vote] += 1
     return {"message": f"Vote '{vote_input.vote}' recorded."}
+
+
+# openai summary 
+client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+@app.post("/summarize")
+def summarize_reviews(payload: ReviewSummaryRequest):
+    print(ReviewSummaryRequest)
+    category_str = ", ".join(payload.categories)
+    price_info = payload.price if payload.price else "Price info not available"
+
+    prompt = f"""
+Write a friendly and short overview of a restaurant with the following details:
+
+- Name: {payload.name}
+- Categories: {category_str}
+- Price: {price_info}
+- Rating: {payload.rating}/5 from {payload.review_count} reviews
+- Location: {payload.location}
+
+Summarize in 1-2 sentences, describing the food type, vibe, popularity/ specialty/ ambiance"
+"""
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt.strip()}],
+            max_tokens=200,
+            temperature=0.7,
+        )
+        summary = response.choices[0].message.content.strip()
+        return {"summary": summary}
+    except Exception as e:
+        return {"error": str(e)}
+    
+
+@app.delete("/boards")
+def clear_all_boards():
+    boards.clear()
+    return {"message": "All boards cleared."}
 
 if __name__ == "__main__":
     import uvicorn
