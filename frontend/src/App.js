@@ -20,6 +20,8 @@ function App() {
   const [showCreateListModal, setShowCreateListModal] = useState(false);
   const [showViewListModal, setShowViewListModal] = useState(false);
   const [activeListView, setActiveListView] = useState(null);
+  //summary
+  const [summaryModal, setSummaryModal] = useState(null);
 
   useEffect(() => {
     fetch("https://bainbites-backend-cf7633e008c8.herokuapp.com/boards")
@@ -44,7 +46,7 @@ function App() {
     e.preventDefault();
     try {
       const res = await fetch(
-        `https://bainbites-backend-cf7633e008c8.herokuapp.com/recommendations?meeting_type=${form.meetingType}&cuisine=${form.cuisine}&location=${form.location}&sort_by=${form.sortBy}&radius=${form.distance}&price=${form.price}`
+        `http://127.0.0.1:8000/recommendations?meeting_type=${form.meetingType}&cuisine=${form.cuisine}&location=${form.location}&sort_by=${form.sortBy}&radius=${form.distance}&price=${form.price}`
       );
       const data = await res.json();
       setRecommendations(data.businesses || []);
@@ -86,11 +88,11 @@ function App() {
       prev.map((l) =>
         l.id === listId
           ? {
-              ...l,
-              restaurants: l.restaurants.some((r) => r.id === restaurant.id)
-                ? l.restaurants
-                : [...l.restaurants, { ...restaurant, votes: 0 }],
-            }
+            ...l,
+            restaurants: l.restaurants.some((r) => r.id === restaurant.id)
+              ? l.restaurants
+              : [...l.restaurants, { ...restaurant, votes: 0 }],
+          }
           : l
       )
     );
@@ -107,15 +109,43 @@ function App() {
       prev.map((list) =>
         list.id === listId
           ? {
-              ...list,
-              restaurants: list.restaurants.map((r) =>
-                r.id === restaurantId ? { ...r, votes: (r.votes || 0) + 1 } : r
-              ),
-            }
+            ...list,
+            restaurants: list.restaurants.map((r) =>
+              r.id === restaurantId ? { ...r, votes: (r.votes || 0) + 1 } : r
+            ),
+          }
           : list
       )
     );
   };
+
+  //for summary
+  const handleEatsBuddy = async (restaurant) => {
+    const payload = {
+      name: restaurant.name,
+      categories: restaurant.categories?.map((c) => c.title) || [],
+      price: restaurant.price || "",
+      rating: restaurant.rating,
+      review_count: restaurant.review_count,
+      location: `${restaurant.location?.address1}, ${restaurant.location?.city}, ${restaurant.location?.zip_code}`,
+      menu_url: restaurant.attributes?.menu_url || restaurant.url,  // fallback to url
+    };
+  
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/summarize`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+  
+      const data = await res.json();
+      console.log("$$$$$$$", payload)
+      setSummaryModal(data.summary || "No summary available.");
+    } catch (err) {
+      setSummaryModal("Failed to fetch summary.");
+    }
+  };
+
 
   return (
     <div className="App">
@@ -205,9 +235,37 @@ function App() {
                         </select>
                       </div>
                     )}
+                    <button
+                      className="button small-button"
+                      onClick={() => {
+                        console.log("Reviews for summary:", r);
+                        handleEatsBuddy(r);
+                      }}
+                      style={{ marginTop: "0.5rem" }}
+                    >
+                      🍽️ Eats AI Summary
+                    </button>
+
                   </div>
                 ))
               )}
+
+              {summaryModal && (
+                <div
+                  className="modal-overlay"
+                  onClick={() => setSummaryModal(null)} 
+                >
+                  <div
+                    className="modal"
+                    onClick={(e) => e.stopPropagation()} 
+                  >
+                    <button className="modal-close" onClick={() => setSummaryModal(null)}>✖</button>
+                    <h3>🍽️ Eats AI Summary</h3>
+                    <p>{summaryModal}</p>
+                  </div>
+                </div>
+              )}
+
             </div>
           </>
         )}

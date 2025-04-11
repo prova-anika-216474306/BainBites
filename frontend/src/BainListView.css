@@ -9,30 +9,31 @@
     border: 1px solid #A6192E;
   }
   
-  .vote-section {
-    margin-top: 0.5rem;
+ 
+/* Vote button container */
+.vote-button-row {
     display: flex;
-    align-items: center;
-    gap: 1rem;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.75rem; /* spacing between the 3 buttons */
+    margin-top: 0.5rem;
   }
   
-  .vote-count {
-    font-weight: bold;
-    font-size: 1rem;
-  }
-  
-  .small-button {
-    font-size: 0.9rem;
-    padding: 0.4rem 0.8rem;
-    background-color: #ffffff;
-    color: #A6192E;
-    border: 1px solid #A6192E;
+ 
+  .vote-button {
+    background-color: #A6192E;
+    color: white;
+    border: none;
     border-radius: 4px;
+    padding: 0.4rem 1rem;
+    flex: 1;
+    text-align: center;
+    cursor: pointer;
+    font-size: 0.95rem;
     transition: background-color 0.2s ease;
   }
   
-  .small-button:hover {
-    background-color: #A6192E;
-    color: #fff;
+  .vote-button:hover {
+    background-color: #871323;
   }
   
