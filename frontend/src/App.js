@@ -46,7 +46,7 @@ function App() {
     e.preventDefault();
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/recommendations?meeting_type=${form.meetingType}&cuisine=${form.cuisine}&location=${form.location}&sort_by=${form.sortBy}&radius=${form.distance}&price=${form.price}`
+        `https://bainbites-backend-cf7633e008c8.herokuapp.com/recommendations?meeting_type=${form.meetingType}&cuisine=${form.cuisine}&location=${form.location}&sort_by=${form.sortBy}&radius=${form.distance}&price=${form.price}`
       );
       const data = await res.json();
       setRecommendations(data.businesses || []);
@@ -132,7 +132,7 @@ function App() {
     };
   
     try {
-      const res = await fetch(`http://127.0.0.1:8000/summarize`, {
+      const res = await fetch(`https://bainbites-backend-cf7633e008c8.herokuapp.com/summarize`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

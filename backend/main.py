@@ -25,8 +25,7 @@ app.add_middleware(
 YELP_API_KEY = os.getenv("YELP_API_KEY")
 YELP_API_URL = "https://api.yelp.com/v3/businesses/search"
 YELP_REVIEWS_URL = "https://api.yelp.com/v3/businesses/{alias}/reviews"
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-gmaps = googlemaps.Client(key=GOOGLE_API_KEY)
+
 
 boards = {}
 
